@@ -1,36 +1,35 @@
-# [Project name]
+# Password Strength Analyzer
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+A privacy-first password strength analyzer and security recommendation system. Everything runs client-side in the browser — passwords are never transmitted, stored, or logged.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- `pnpm --filter @workspace/password-analyzer run dev` — run the Password Strength Analyzer web app
+- `pnpm --filter @workspace/password-analyzer run typecheck` — typecheck the app
+- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000, unrelated scaffold artifact)
 - `pnpm run typecheck` — full typecheck across all packages
 - `pnpm run build` — typecheck + build all packages
-- `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
 
 ## Stack
 
 - pnpm workspaces, Node.js 24, TypeScript 5.9
-- API: Express 5
-- DB: PostgreSQL + Drizzle ORM
-- Validation: Zod (`zod/v4`), `drizzle-zod`
-- API codegen: Orval (from OpenAPI spec)
-- Build: esbuild (CJS bundle)
+- Password Analyzer: React + Vite, Tailwind, Inter + JetBrains Mono fonts
+- API: Express 5 (scaffold artifact, not used by the analyzer)
+- DB: PostgreSQL + Drizzle ORM (scaffold artifact, not used by the analyzer)
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/password-analyzer/src/lib/password-analyzer.ts` — core analysis logic: entropy calculation, weakness/pattern detection (dictionary words, keyboard patterns, repeats, numeric-only, common substitutions), crack-time estimation, recommendations, and the secure password generator.
+- `artifacts/password-analyzer/src/pages/analyzer.tsx` — main UI: strength meter, criteria checklist, recommendations, and generator controls.
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- Built as a standalone artifact, not integrated with the API server/DB artifacts, since passwords must never leave the browser for security/privacy reasons — there is no backend call or persistence layer by design.
+- Crack-time estimates are computed from an *effective* entropy (raw entropy minus a penalty derived from detected weaknesses/patterns), not raw entropy alone — this keeps the crack-time number consistent with the weakness checklist (e.g. a password matching a common word pattern shows a fast crack time even if its raw character-set entropy looks high).
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+VaultTech Password Auditor analyzes any password in real time entirely in the browser: strength score, specific weaknesses (common patterns, keyboard sequences, repeats, substitutions), estimated crack time, a criteria checklist, tailored recommendations, a best-practices education section (password managers, 2FA), and a secure password generator with adjustable length and character sets.
 
 ## User preferences
 
@@ -38,7 +37,7 @@ _Populate as you build — explicit user instructions worth remembering across s
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- The `origin` git remote must use an HTTPS URL (not `git@github.com:...`) for the git-remote push/pull tooling to authenticate; convert with `git remote set-url origin https://github.com/...` if pushes fail with `NO_REMOTE`.
 
 ## Pointers
 
